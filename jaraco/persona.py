@@ -23,10 +23,22 @@ class Persona(cherrypy.Tool):
     """
 
     def __init__(self):
+        """
+        When initialized, the tool installs itself into the 'before_handler'
+        hook at the default priority.
+
+        As a result, for every request for which the tool is enabled,
+        self.authenticate will be invoked.
+        """
         super(Persona, self).__init__('before_handler', self.authenticate)
 
     @property
     def username(self):
+        """
+        The tool supplies a username property which stores the authenticated
+        user's name in the session. A subclass could override this property
+        to customize the server-side storage of the username.
+        """
         return cherrypy.session.get('username', None)
 
     @username.setter
@@ -41,6 +53,7 @@ class Persona(cherrypy.Tool):
 
     def authenticate(self, login_path='/login', logout_path='/logout'):
         """
+        Entry point for this tool.
         """
         if cherrypy.request.path_info == login_path:
             cherrypy.request.handler = self.login
