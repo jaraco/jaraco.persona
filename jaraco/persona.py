@@ -51,10 +51,20 @@ class Persona(cherrypy.Tool):
         template = pkg_resources.resource_string(__name__, 'XHR persona.js')
         return template % vars()
 
-    def authenticate(self, login_path='/login', logout_path='/logout'):
+    def authenticate(self, audience, login_path='/login',
+            logout_path='/logout'):
         """
         Entry point for this tool.
+
+        Audience is the host name and port on which this server is hosting.
+        It may be set to 'HOST' to use the HOST header, but this setting
+        SHOULD ONLY BE USED when the HOST header has been verified by a
+        trusted party (such as a reverse-proxy).
         """
+        if audience == 'HOST':
+            audience = cherrypy.request.headers['HOST']
+        self.audience = audience
+
         if cherrypy.request.path_info == login_path:
             cherrypy.request.handler = self.login
             return
@@ -67,6 +77,9 @@ class Persona(cherrypy.Tool):
         cherrypy.request.persona_script = self.persona_script(login_path, logout_path)
 
         if not self.username:
+            # the user is not logged in, but the tool is enabled, so instead
+            #  of allowing the default handler to run, respond instead with
+            #  the authentication page.
             cherrypy.request.handler = self.force_login
 
     def force_login(self):
@@ -94,7 +107,7 @@ class Persona(cherrypy.Tool):
     def login(self):
         assertion = cherrypy.request.params['assertion']
         # Send the assertion to Mozilla's verifier service.
-        data = {'assertion': assertion, 'audience': 'http://localhost:8080'}
+        data = {'assertion': assertion, 'audience': self.audience}
         resp = requests.post('https://verifier.login.persona.org/verify',
             data=data, verify=True)
 
@@ -120,6 +133,7 @@ class HelloWorld:
     """
     _cp_config = {
         'tools.persona.on': True,
+        'tools.persona.audience': 'localhost:8080',
         'tools.sessions.on': True,
     }
 

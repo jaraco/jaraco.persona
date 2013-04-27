@@ -16,6 +16,7 @@ be launched by invoking ``python -m jaraco.persona``::
     class HelloWorld:
         _cp_config = {
             'tools.persona.on': True,
+            'tools.persona.audience': 'localhost:8080',
             'tools.sessions.on': True,
         }
 
@@ -35,6 +36,17 @@ be launched by invoking ``python -m jaraco.persona``::
 
     if __name__ == '__main__':
         HelloWorld.run()
+
+Configuration
+=============
+
+The tool requires an 'audience' parameter, which specifies the ``host:port``
+string on which the service runs. This parameter must be configured to match
+the server so that requests can be properly authenticated. The 'audience'
+may be set to the string 'HOST' in which case the HTTP Host header will be
+used, but this setting should only be used in an environment where the Host
+header can be trusted, such as when a reverse proxy is used that validates
+the header.
 
 Partial Auth
 ============
