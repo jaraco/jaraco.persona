@@ -102,6 +102,9 @@ class Persona(cherrypy.Tool):
 
 
 class HelloWorld:
+    """
+    A fully-contained example CherryPy app utilizing persona
+    """
     _cp_config = {
         'tools.persona.on': True,
         'tools.sessions.on': True,
