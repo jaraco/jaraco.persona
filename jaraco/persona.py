@@ -1,7 +1,7 @@
 import json
 
 import pkg_resources
-import requests
+import browserid
 import cherrypy
 
 
@@ -106,18 +106,13 @@ class Persona(cherrypy.Tool):
 
     def login(self):
         assertion = cherrypy.request.params['assertion']
-        # Send the assertion to Mozilla's verifier service.
-        data = {'assertion': assertion, 'audience': self.audience}
-        resp = requests.post('https://verifier.login.persona.org/verify',
-            data=data, verify=True)
+        # Verify the assertion using browserid.
+        validation = browserid.verify(assertion, self.audience)
 
-        # Did the verifier respond?
-        resp.raise_for_status()
-
-        validation = resp.json()
         # Check if the assertion was valid
         if validation['status'] != 'okay':
             raise cherrypy.HTTPError(400, "invalid")
+
         # Log the user in by setting the username
         self.username = validation['email']
         return 'You are logged in'

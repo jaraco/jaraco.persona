@@ -17,7 +17,7 @@ setup_params = dict(
 	namespace_packages=['jaraco'],
 	zip_safe=False,
 	install_requires=[
-		'requests',
+		'PyBrowserID',
 		'CherryPy',
 	],
 	setup_requires=[
