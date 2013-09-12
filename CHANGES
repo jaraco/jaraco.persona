@@ -1,3 +1,8 @@
+2.0.1
+=====
+
+Fix packaging so 'XHR persona.js' is included in the distribution.
+
 2.0
 ===
 
