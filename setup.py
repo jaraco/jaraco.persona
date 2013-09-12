@@ -14,6 +14,7 @@ setup_params = dict(
 	long_description=long_description,
 	url="https://bitbucket.org/jaraco/jaraco.persona",
 	packages=setuptools.find_packages(),
+	include_package_data=True,
 	namespace_packages=['jaraco'],
 	zip_safe=False,
 	install_requires=[
